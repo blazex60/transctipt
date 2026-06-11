@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"python3 transcribe.py --help && echo \\\"---exit:$?\\\"\",\"description\":\"Test --help output\"}",
-  "error": "Exit code 1\nTraceback (most recent call last):\n  File \"/home/lemitsu/Documents/transctipt/transcribe.py\", line 9, in <module>\n    from faster_whisper import WhisperModel\nModuleNotFoundError: No module named 'faster_whisper'",
-  "timestamp": "2026-06-10T15:50:18.581Z",
-  "retry_count": 1
-}
