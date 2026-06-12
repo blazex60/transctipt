@@ -58,23 +58,32 @@ def transcribe_file(
     audio_path: Path,
     speaker: str,
 ) -> list[dict]:
-    segments, _ = model.transcribe(
-        str(audio_path),
-        language="ja",
-        beam_size=5,
-        vad_filter=True,
-        vad_parameters={"min_silence_duration_ms": 500},
-    )
-    return [
-        {
-            "start": seg.start,
-            "end": seg.end,
-            "text": seg.text.strip(),
-            "speaker": speaker,
-        }
-        for seg in segments
-        if seg.text.strip()
-    ]
+    try:
+        segments, _ = model.transcribe(
+            str(audio_path),
+            language="ja",
+            beam_size=5,
+            vad_filter=True,
+            vad_parameters={"min_silence_duration_ms": 500},
+        )
+        return [
+            {
+                "start": seg.start,
+                "end": seg.end,
+                "text": seg.text.strip(),
+                "speaker": speaker,
+            }
+            for seg in segments
+            if seg.text.strip()
+        ]
+    except RuntimeError as e:
+        if "libcublas" in str(e):
+            raise RuntimeError(
+                "CUDA ライブラリ (libcublas.so.12) が見つかりません。\n"
+                "WSL の場合: sudo apt-get install -y cuda-libraries-12-6\n"
+                "または --device cpu --compute-type int8 で CPU 実行してください。"
+            ) from e
+        raise
 
 
 # --- SRT 変換 ---
@@ -176,6 +185,9 @@ def main() -> int:
         return 1
     except UserAbortError as e:
         print(str(e), file=sys.stderr)
+        return 1
+    except RuntimeError as e:
+        print(f"エラー: {e}", file=sys.stderr)
         return 1
     except KeyboardInterrupt:
         print("\n中断されました。", file=sys.stderr)
