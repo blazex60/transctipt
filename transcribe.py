@@ -42,7 +42,13 @@ def find_audio_files(folder: Path) -> list[Path]:
 # --- Whisper モデルロード ---
 
 def load_model(model_name: str, device: str = "auto", compute_type: str = "auto") -> WhisperModel:
-    return WhisperModel(model_name, device=device, compute_type=compute_type)
+    try:
+        return WhisperModel(model_name, device=device, compute_type=compute_type)
+    except RuntimeError as e:
+        if device == "auto" and "libcublas" in str(e):
+            print("警告: CUDA ライブラリが見つかりません。CPU にフォールバックします。", file=sys.stderr)
+            return WhisperModel(model_name, device="cpu", compute_type="int8")
+        raise
 
 
 # --- 転写 ---
