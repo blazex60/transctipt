@@ -1,0 +1,24 @@
+{
+  "name": "transctipt",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
+      }
+    }
+  }
+
+  // GPU を使う場合は以下のコメントを外す（NVIDIA CUDA）:
+  // "runArgs": ["--gpus", "all"],
+  // "hostRequirements": { "gpu": "optional" }
+}
